@@ -1,0 +1,25 @@
+# A Docker Compose must always start with the version tag.
+version: '3'
+
+# The 'services' keyword is where you define services
+services:
+  database:
+    image: 'postgres:14.2-alpine'
+    restart: always
+    ports:
+      - 5432:5432
+      # By default, Postgres is running on the 5432 port.
+      # If we want to access the database from our computer (outside the container),
+      # we must share the port with our computer's port.
+      # The syntax is [port on machine]:[port mapped to the port on the machine, for the docker container]
+    env_file:
+      - .env 
+      # The `env_file` tag allows us to declare an environment file
+      # The name of your environment file (the one at the repository root)
+    volumes:
+      # The `volumes` tag allows us to share a folder with our container.
+      - ./db-data/:/var/lib/postgresql/data/
+      # Syntax: [folder path on our machine]:[folder path to retrieve in the container]
+      # Share the folder `db-data` in our root repository with the default PostgreSQL data path.
+      # When data changes inside `/var/lib/postgresql/data/` it automatically changes in `db-data`.
+      # You don't need to create the `db-data` folder. Docker Compose does it.

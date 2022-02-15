@@ -11,11 +11,15 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use(cors());
 app.options('*', cors());
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 
 // ==========================================
 // Routers =========================
 
+// test route
+app.get('/', (req, res) => {
+  res.send('Welcome to RMNDR.');
+});
 
 // Error Handler
 app.use((err, res) => {
