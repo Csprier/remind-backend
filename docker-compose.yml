@@ -24,3 +24,24 @@ services:
       # When data changes inside `/var/lib/postgresql/data/` it automatically changes in `db-data`.
       # You don't need to create the `db-data` folder. Docker Compose does it.
       # Syntax: [folder path on our machine]:[folder path to retrieve in the container]
+  
+  
+  server:
+    build:
+      context: /home/cpdev/remind/remind-backend/
+      dockerfile: Dockerfile
+    image: node:lts-alpine
+    container_name: reminder-server
+    environment:
+      NODE_ENV: development
+      CORSHEADER: 'http://0.0.0.0:3000'
+      PROXY: 'true'
+    command: npm run dev
+    restart: always
+    ports:
+      - 8080:8080
+    volumes:
+      - ./remind-backend/:/logs
+      - ./remind-backend/:/logs/node_modules
+    depends_on:
+      - database
