@@ -4,7 +4,7 @@ version: '3.8'
 # The 'services' keyword is where you define services
 services:
   database:
-    container_name: remind-database
+    container_name: remind_database
     image: 'postgres:14.2-alpine'
     restart: unless-stopped
     ports:
@@ -13,39 +13,52 @@ services:
       # If we want to access the database from our local machine, share the port with our computer's port.
       # Syntax: [port on machine]:[port mapped to the port on the machine, for the docker container]
     environment:
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-      - POSTGRES_DB
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=remind_database
 
     volumes: # The `volumes` tag allows us to share a folder with our container.
-      - ./db-data/:/var/lib/postgresql/data/
-      - ./init/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
+      - ./db/init:/docker-entrypoint-initdb.d/
+      - ./db:/var/lib/postgres/data/
+      # - ./db-data:/var/lib/postgresql/data/
+      # - ./init/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
       # Share the folder `db-data` in our root repository with the default PostgreSQL data path.
       # When data changes inside `/var/lib/postgresql/data/` it automatically changes in `db-data`.
       # You don't need to create the `db-data` folder. Docker Compose does it.
       # Syntax: [folder path on our machine]:[folder path to retrieve in the container]
   
+  pgadmin:
+    container_name: pgadmin4
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - 80:80
   
-#   server:
-#     build:
-#       context: /home/cpdev/remind/remind-backend/
-#       dockerfile: Dockerfile
-#     image: node:lts-alpine
-#     container_name: reminder-server
-#     environment:
-#       NODE_ENV: development
-#       CORSHEADER: 'http://0.0.0.0:3000'
-#       PROXY: 'true'
-#     command: npm run dev
-#     restart: always
-#     ports:
-#       - 8080:8080
-#     volumes:
-#       - ./remind-backend/:/logs
-#       - ./remind-backend/:/logs/node_modules
-#     depends_on:
-#       - database
+  
+  server:
+    build:
+      context: /home/cpdev/remind/remind-backend/
+      dockerfile: Dockerfile
+    image: node:lts-alpine
+    container_name: reminder-server
+    environment:
+      NODE_ENV: development
+      CORSHEADER: 'http://0.0.0.0:3000'
+      PROXY: 'true'
+    command: npm run dev
+    restart: always
+    ports:
+      - 8080:8080
+    volumes:
+      - ./remind-backend/:/logs
+      - ./remind-backend/:/logs/node_modules
+    depends_on:
+      - database
 
-# networks:
-#   default:
-#     name: remind-network
+networks:
+  default:
+    name: remind-network
