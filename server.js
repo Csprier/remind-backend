@@ -15,10 +15,13 @@ const PORT = process.env.PORT || 8080;
 
 // ==========================================
 // Routers =========================
+const greetingRouter = require('./routes/greeting.router');
+app.use(greetingRouter);
 
 // test route
-app.get('/', (req, res) => {
-  res.send('Welcome to RMNDR.');
+app.get('/greeting', (req, res) => {
+  console.log(res);
+  res.send(res);
 });
 
 // Error Handler

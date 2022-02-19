@@ -26,17 +26,19 @@ services:
       # When data changes inside `/var/lib/postgresql/data/` it automatically changes in `db-data`.
       # You don't need to create the `db-data` folder. Docker Compose does it.
       # Syntax: [folder path on our machine]:[folder path to retrieve in the container]
-  
+
   pgadmin:
-    container_name: pgadmin4
-    image: dpage/pgadmin4
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-    ports:
-      - 80:80
+   container_name: pgadmin4_container
+   image: dpage/pgadmin4:5.5
+   restart: always
+   environment:
+     PGADMIN_DEFAULT_EMAIL: admin@admin.com
+     PGADMIN_DEFAULT_PASSWORD: secret
+     PGADMIN_LISTEN_PORT: 80
+   ports:
+     - "80:80"
+   volumes:
+     - pgadmin-data:/var/lib/pgadmin
   
   
   server:
