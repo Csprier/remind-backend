@@ -1,8 +1,7 @@
 module.exports = (function() {
   const greetingRouter = require('express').Router();
-  const db = require('../utility/db/db');
-  greetingRouter.get('/greeting', (req, res) => {
-    let message;
+  const db = require('../db/db');
+  greetingRouter.get('/', async function(req, res, next) {
     db.query('SELECT * FROM Greeting', (err, data) => {
       if (err) {
         console.error(err);

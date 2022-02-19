@@ -1,31 +1,23 @@
 # A Docker Compose must always start with the version tag.
 version: '3.8'
 
-# The 'services' keyword is where you define services
 services:
+  # connection string: "postgresql://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}/${DB_DATABASE}"
   database:
     container_name: remind_database
     image: 'postgres:14.2-alpine'
     restart: unless-stopped
     ports:
       - 5432:5432
-      # By default, Postgres is running on the 5432 port.
-      # If we want to access the database from our local machine, share the port with our computer's port.
-      # Syntax: [port on machine]:[port mapped to the port on the machine, for the docker container]
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=remind_database
 
-    volumes: # The `volumes` tag allows us to share a folder with our container.
+    volumes:
       - ./db/init:/docker-entrypoint-initdb.d/
       - ./db:/var/lib/postgres/data/
       # - ./db-data:/var/lib/postgresql/data/
-      # - ./init/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
-      # Share the folder `db-data` in our root repository with the default PostgreSQL data path.
-      # When data changes inside `/var/lib/postgresql/data/` it automatically changes in `db-data`.
-      # You don't need to create the `db-data` folder. Docker Compose does it.
-      # Syntax: [folder path on our machine]:[folder path to retrieve in the container]
 
   pgadmin:
    container_name: pgadmin4_container
@@ -36,10 +28,7 @@ services:
      PGADMIN_DEFAULT_PASSWORD: secret
      PGADMIN_LISTEN_PORT: 80
    ports:
-     - "80:80"
-   volumes:
-     - pgadmin-data:/var/lib/pgadmin
-  
+     - 80:80
   
   server:
     build:
@@ -64,3 +53,7 @@ services:
 networks:
   default:
     name: remind-network
+
+volumes:
+  db:
+    driver: local
