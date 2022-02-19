@@ -16,12 +16,12 @@ const PORT = process.env.PORT || 8080;
 // ==========================================
 // Routers =========================
 const greetingRouter = require('./routes/greeting.router');
-app.use(greetingRouter);
+app.use('/greeting', greetingRouter);
 
 // test route
 app.get('/greeting', (req, res) => {
-  console.log(res);
-  res.send(res);
+	console.log(res);
+	res.send(res);
 });
 
 // Error Handler
